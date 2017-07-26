@@ -1,0 +1,101 @@
+<--METODO 1 PARA DIBUJAR PUNTOS-->
+<--GUARDAR GEOMETRIAS EN VARIABLES-->
+<--PARA LUEGO GUARDARLAS EN LA BASE DE DATOS-->
+
+
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.0.0/css/ol.css" type="text/css">
+    <style>
+body{background: #030303;}
+.map{
+width:100%;
+height:80%;
+  }
+  .title {text-align:center;color:#ffffff;}
+</style>
+    </style>
+    <script src="http://openlayers.org/en/v3.0.0/build/ol.js" type="text/javascript"></script>
+    <title>OpenLayers 3 example</title>
+  </head>
+  <body>
+    <h4 class="title">METHOD 1: DRAW POINTS</h4>
+    <p class="title">The Coordinates of the Point through the Console- Jeisson Rueda</p>
+    <div id="map" class="map"></div>
+
+    <script type="text/javascript">
+    
+/** ESPECIFICACIONES DEL PANEL CONSOLE()
+
+console.log() muestra un mensaje en la consola.
+console.debug() muestra un mensaje y ademas nuestra el número de línea donde se encuentra.
+console.warn() muestra un mensaje de alerta con un icono y fondo amarillo para identificarlo.
+console.error() muestra un mensaje de error con un icono y fondo en color rojo.
+*/
+//creo el source que contiene los datos vectoriales del dibujo
+var source = new ol.source.Vector();
+
+
+//creo la capa vectorial que contiene las caracteristicas del dibujo
+
+var vector = new ol.layer.Vector({
+  source: source,
+  style: new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(255, 255, 255, 0.2)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#ffcc33',
+      width: 2
+    }),
+    image: new ol.style.Circle({
+      radius: 7,
+      fill: new ol.style.Fill({
+        color: '#ffcc33'
+      })
+    })
+  })
+});
+
+
+var point_feature = new ol.Feature({ });
+var point_geom = new ol.geom.Point(ol.proj.transform([-74.105069, 4.620908], 'EPSG:4326','EPSG:3857'));
+point_feature.setGeometry(point_geom);
+
+/* para capturar las coordenadas: point_feature.getGeometry(point_geom);
+var aviso_de_gloria=point_feature.getCoordinates(point_geom);
+*/
+console.log("probando consola");
+
+
+var vector_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    features: [point_feature]
+  })
+})
+
+
+  var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }), vector_layer
+        ],
+        view: new ol.View({
+          center: ol.proj.transform([-74.105069, 4.620908], 'EPSG:4326','EPSG:3857'),
+          zoom: 4
+        })
+      });
+      
+      
+var coor= map.getView().getCenter(ol.proj.transform([-74.105069, 4.620908], 'EPSG:4326','EPSG:3857'));
+
+console.log("muestra las coordenadass planas: " + coor  );
+
+
+    </script>
+  </body>
+</html>

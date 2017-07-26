@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" /><script src="http://openlayers.org/en/v3.2.1/build/ol.js"></script>
+	<link href="http://openlayers.org/en/v3.2.1/css/ol.css" rel="stylesheet" type="text/css" /><script src="http://openlayers.org/en/v3.2.1/resources/jquery.min.js"></script><script src="http://openlayers.org/en/v3.2.1/resources/bootstrap/js/bootstrap.min.js"></script>
+	<link href="http://openlayers.org/en/v3.2.1/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<style>
+.map{
+  width: 100%;
+ height: 60%;
+  }
+body{background: #030303;}
+.title {text-align:center;color:#ffffff;}
+</style>
+</head>
+<body>
+  <h4 class="title">Basic Map With Tables - Jeisson Rueda</h4>
+<table border="5" style="border-color:#f2f2f2; width: 100%; height: 100%;><td ><div  class="map" id="map" ></td><td><form class="form-inline"><label class="title">Geometry type &nbsp;</label> <select  id="type"><option value="">Ninguno</option><option value="Point">Dibujar Punto</option><option value="LineString">Dibujar linea</option><option value="Polygon">Dibujar Poligono</option> </select></form></td></table>
+<div id="popup" style="padding-bottom: 10px;"></div>
+</div>
+
+<div class="map" id="map">
+<div id="popup"></div>
+<br />
+<br />
+<br />
+&nbsp;</div>
+
+
+<script type="text/javascript">
+	
+	//jeisson rueda developer
+	
+//inicializo el marker o punto de interés
+      var iconFeature = new ol.Feature({
+		//coordenadas del punto y el sistema de referencia obligatorio y pongo los parámetros que deseo mostrar
+        geometry: new ol.geom.Point(ol.proj.transform([-75.05, 4.8167], 'EPSG:4326', 'EPSG:3857')),
+        name:  '<form action="php/controlador.php" method=POST>' +
+   'Ingresar descripcion: <input type=text name=suerte required />' +
+   '<input type=submit value=Procesar />' +
+'</form>',
+		population: 'Spark GT' ,
+		rainfall: 'Gt342'
+      });
+//especifico las caracteristicas  de estilo al punto, como quiero que lo muestre	  
+      var iconStyle = new ol.style.Style({
+        image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+          anchor: [0.5, 46],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          opacity: 0.75,
+          src: 'data/weapon.png'
+        }))
+      });
+	  //le pongo las especificaciones de estilo al punto 
+      iconFeature.setStyle(iconStyle);
+	
+	  //el objeto ol.source.Vector es el encargado de guardar las especificaciones del elemento vectorial
+	  //como las propiedades para luego pasarlas a la capa
+      var vectorSource = new ol.source.Vector({
+        features: [iconFeature]
+      });
+	  //creo la capa vectorial para puntos
+      var vectorLayer = new ol.layer.Vector({
+        source: vectorSource
+      });
+
+	  
+	    var source = new ol.source.Vector();
+		var vectorLayer2 = new ol.layer.Vector({
+        source: source
+      }) ;
+	  
+
+	  
+	  
+
+	  
+	  
+	  
+	  //creo el mapa 
+      var map = new ol.Map({
+	 
+							target: document.getElementById('map'),
+							
+							layers: [//creo los tiles
+									  new ol.layer.Tile({source: new ol.source.OSM()}), vectorLayer],
+									  
+							controls: ol.control.defaults(),
+							
+							view: new ol.View({center: ol.proj.transform([-75.05, 4.8167], 'EPSG:4326', 'EPSG:3857'),zoom: 5})
+						});
+
+	  
+
+	  
+      var element = document.getElementById('popup'); //llamamos el id='popup'
+	 
+        var popup = new ol.Overlay({
+        element: element,
+        positioning: 'top-right', 
+        stopEvent: true //con este parametro con valor true, el popup no se cierra. Si se pone false, el popup se cierra con solo un clic
+      });
+      map.addOverlay(popup);
+	  
+	  
+
+
+      map.on('click', function(evt) {var feature = map.forEachFeatureAtPixel(evt.pixel,function(feature, layer) {return feature; });
+        if (feature) {
+          var geometry = feature.getGeometry();
+          var coord = geometry.getCoordinates();
+          popup.setPosition(coord);
+		 
+          $(element).popover({
+            'placement': 'top',
+            'html': true,
+            'content': '<br><b>Vehiculo: </b>'+feature.get('name')+'<br><b>modelo: </b>'+feature.get('population')+'<br><b>codigo: </b>'+feature.get('rainfall')
+          });
+          $(element).popover('show');
+        } else {
+          $(element).popover('destroy');
+        }
+      });
+
+      map.on('pointermove', function(e) {
+        if (e.dragging) {
+          $(element).popover('destroy');
+          return;
+        }
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel);
+        map.getTarget().style.cursor = hit ? 'pointer' : '';
+      });
+	  
+
+/*	  	 
+//Recibimos el valor de la opcion del formulario de interaccion
+	
+  var typeSelect = document.getElementById('type');
+		
+		
+		
+	var draw; //variable global que podremos remover después
+	
+        //creamos la funcion para poder dibujar puntos, lineas y poligonos utilizando el valor que el usuario puso en el formulario de interaccion, es decir typeSelect.value
+        function addInteraction() {
+                                      draw = new ol.interaction.Draw({
+                                                                      source: source,
+                                                                      type: typeSelect
+                                                                      });
+                                      map.addInteraction(draw);	  
+	
+	                          }
+	  
+                       addInteraction();  //ejecutamos la funcion	  
+
+	  */
+
+
+
+    </script></body>
+</html>

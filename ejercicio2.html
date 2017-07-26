@@ -1,0 +1,57 @@
+<html>
+<!--CREAR MAPA CON CAPA WKT-->
+  <head>
+    <meta charset="utf-8">
+    <script src="http://openlayers.org/en/v3.2.1/build/ol.js"></script>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.2.1/css/ol.css" type="text/css">
+    <script src="http://openlayers.org/en/v3.2.1/resources/jquery.min.js"></script>
+    <script src="http://openlayers.org/en/v3.2.1/resources/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.2.1/resources/bootstrap/css/bootstrap.min.css" type="text/css">
+	<style>
+	body{background: #030303;}
+	.map{
+	width: 100%;
+	height: 90%;
+	text-align: center;
+	}
+	.title {text-align:center;color:#ffffff;}
+	</style>
+	</head>
+	<body>
+		<h4 class="title">WKT DataBases Management - Jeisson Rueda</h4>
+	<div id="map" class="map"></div>
+	<script type="text/javascript">
+	
+	//capa base OSM
+	var milayer = new ol.layer.Tile({source: new ol.source.OSM()});
+	//capa WKT
+	var format = new ol.format.WKT();
+    var feature = format.readFeature(
+    'POLYGON ((-76.052960637080673 4.694776160012733,-76.073884244609062 '+
+	'4.674825743532168,-76.066423113242351 4.642710438953696,-76.023927104153671 '+
+	'4.624219809044879,-75.987432439859944 4.634600513555093,-75.976078544301899 '+
+	'4.656172915115379,-75.983377477160644 4.681475882359023,-76.024900295201505 '+
+	'4.700453107791756,-76.052960637080673 4.694776160012733))');
+feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+var source1= new ol.source.Vector({
+    features: [feature]
+  });
+
+var capa1 = new ol.layer.Vector({
+  source: source1
+});
+	var visualizacion = new ol.View({center: ol.proj.transform([ -76.0529, 4.69477],'EPSG:4326', 'EPSG:3857'), zoom:10});
+	
+	var mi_mapa = new ol.Map({
+								target: 'map',
+								layers: [milayer, capa1],
+								view: visualizacion
+							});
+	mi_mapa.addControl(new ol.control.ZoomSlider());
+	
+	
+	
+	
+	</script>
+	</body>
+	</html>
